@@ -1,5 +1,36 @@
 # Activity Log
 
+## 2026/04/28-1745
+
+**User prompt:** `continue` — resume the prior `/ddd` thread; user picked option **B** (5 contexts now, then commit/push and stop).
+
+**Claude output summary:**
+- Confirmed proposal: generate 5 Layer 2 `use-cases.md` files (`Status: Draft (AI)`) for `market-data`, `alpha-generation`, `conviction-sizing`, `catalyst-timing`, `risk-regime`. All NEW, no overwrites.
+- Drafted each file from the `intent-translation.md` template — same sections, same tables. Each carries: Business Intent → Affected Contexts → Term Mapping → Use Cases (UC-N) → Invariants → Cross-Context Deps → Ownership → Constraints → Acceptance Criteria → Open Questions → Related Docs.
+- File contents anchored to the existing Layer 3 docs:
+  - `market-data/use-cases.md` — UC-1..UC-5 (price/fundamental/Form 4/13F ingest + universe read-model). Reaffirms ADR-0004 EDGAR-direct decision and HR-1 (no cross-context DB reads). Cluster detection delegated to `catalyst-timing`.
+  - `alpha-generation/use-cases.md` — UC-1..UC-3 (RunScreeningPass / RescoreOnFundamentalChange / EnableDisableFramework). Anchored to ADR-0005 strict-JSON; composite `AlphaScore` re-normalizes when active framework set changes; PRD §4.1 floors are hard defaults.
+  - `conviction-sizing/use-cases.md` — UC-1..UC-2 (Assess / RegradeOnFundamentalChange). Refresh emits only on grade or band change (anti-noise). `portfolio-construction` owns the final cap clip.
+  - `catalyst-timing/use-cases.md` — UC-1..UC-3 (Evaluate / ReevaluateOnInsiderClusterDetected / ScheduledEarningsEntryReview). Codifies "no event on `pass`" rule (matches event-catalog payload table). Held-name coverage extends past alpha candidates.
+  - `risk-regime/use-cases.md` — UC-1..UC-2 (Recompute / DowngradeOnAlert). Singleton aggregate; `RiskRegimeChanged` emits only on actual transition; alert-driven downgrades are monotonic.
+- Cross-check: every `Related Docs` relative path resolves (`../../../../input/...` for PRDs, `../../../architecture/...` for Layer 3, `../../../architecture/adr/...` for ADRs). All ADRs referenced (`0002`, `0004`, `0005`) exist on disk.
+- Open questions surfaced per file (vendor selection, grade thresholds, cluster size cap, regime cap table, etc.) — these block downstream Layer 3 generation until a domain expert closes them, per `/ddd` skill rule.
+
+**Todo list status:** all 6 todos completed.
+
+| # | Todo | Status |
+|---|------|--------|
+| 1 | Write market-data use-cases.md | ✅ |
+| 2 | Write alpha-generation use-cases.md | ✅ |
+| 3 | Write conviction-sizing use-cases.md | ✅ |
+| 4 | Write catalyst-timing use-cases.md | ✅ |
+| 5 | Write risk-regime use-cases.md | ✅ |
+| 6 | Cross-check links + activity-log + commit/push | ✅ |
+
+**Next session:** generate the remaining 5 Layer 2 `use-cases.md` for `portfolio-construction`, `rebalancing`, `execution`, `monitoring`, `backtesting`. After that, all 10 use-cases sit at `Status: Draft (AI)` awaiting domain-expert approval before Layer 3 generation can be trusted.
+
+---
+
 ## 2026/04/28-1720
 
 **User prompt:** `/ddd doc/ddd/input/prd.md doc/ddd/input/investment-frameworks.md` — continue the DDD generation; user chose to start with the 5 ADRs (Layer 6) before the Layer 2 use-cases.
