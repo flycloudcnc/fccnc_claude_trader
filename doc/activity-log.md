@@ -1,5 +1,37 @@
 # Activity Log
 
+## 2026/04/28-1820
+
+**User prompt:** "the remaining 5 — portfolio-construction, rebalancing, execution, monitoring, backtesting." — continue the prior `/ddd` thread to produce Layer 2 use-cases for the last 5 bounded contexts.
+
+**Claude output summary:**
+- Read the existing 5 use-cases files + Layer 3 anchors (`context-map.md`, `architecture.md`, `event-catalog.md`, `ubiquitous-language.md`) + the `intent-translation.md` template + PRD/investment-frameworks inputs to lock convention.
+- Drafted 5 new `use-cases.md` (`Status: Draft (AI)`) — one per remaining bounded context, all using the same section order, table shapes, and link conventions as the first 5:
+  - `portfolio-management/portfolio-construction/use-cases.md` — UC-1..UC-3 (ComposePortfolioTarget / RecomposeOnRegimeChange / ClassifyActionsAgainstCurrentPositions). Encodes PRD §4.5 formula + constraints; explicit `action=close` for held tickers dropped from target (no implicit drops); `Σ target_weight + cash_target == 1`. Hard-fail on `ConstraintConflictError` (no silent clipping).
+  - `portfolio-management/rebalancing/use-cases.md` — UC-1..UC-7 covering all 6 PRD §4.6 trigger types + a synchronous compose-and-submit step (anchored to ADR-0003). Defensive-only invariant on regime/insider/risk-alert triggers; per-action `≤ 0.05 × portfolio_value` size cap; no event emission on empty plans.
+  - `trade-operations/execution/use-cases.md` — UC-1..UC-6 (Submit / HandleFill / HandleRejection / Cancel / Reconcile / EnforcePaperTradingFlag). Reaffirms context-map rule #1 (sole IBKR caller); idempotency on `(plan_id, action_index)`; IBKR is source-of-truth for `AccountPosition.quantity` on reconciliation; fat-finger band on limit prices.
+  - `trade-operations/monitoring/use-cases.md` — UC-1..UC-7 (snapshot + 5 alert paths + resolve). Observational-only; cooldown to suppress noise; market-hours-aware stale-price alerts; counter-idempotent on `(event_name, event_id)`. Open question flagged: do we need an `AlertResolved` event for re-upgrades?
+  - `research-validation/backtesting/use-cases.md` — UC-1..UC-5 (Configure / ReplayCadenceTick / SimulateReturns / ComputeMetrics / Compare). Explicit v1 scope: target-weight simulation only — `rebalancing`/`execution` NOT invoked (slippage/fill modelling deferred). Anchored to context-map rule #4 (sandboxed `BacktestEventBus` only — no production-bus traffic). Point-in-time correctness as a hard invariant.
+- Cross-checked all `Related Docs` paths from `domains/<ctx>/use-cases.md` (4 levels up to `input/`, 3 levels up to `architecture/`); ADR references match files on disk.
+- Cross-checked event names against `event-catalog.md`: every event referenced (PortfolioTargetGenerated, RebalanceTriggered, RebalancePlanProposed, OrderSubmitted/Filled/Rejected, PositionUpdated, PortfolioHealthSnapshotTaken, RiskAlertRaised, BacktestCompleted, LoopOverrun) exists in the catalog with matching publishers/subscribers.
+- Surfaced ~40 open questions in total across the 5 files for the domain expert (composition formula constants, drift definition, fat-finger band, threshold tables, cooldown durations, slippage model in backtest, etc.). These block downstream Layer 3 generation per `/ddd` skill rule.
+
+**Todo list status:** all 7 todos completed.
+
+| # | Todo | Status |
+|---|------|--------|
+| 1 | Review architecture.md + ADRs for context-specific constraints | ✅ |
+| 2 | Draft portfolio-construction use-cases.md | ✅ |
+| 3 | Draft rebalancing use-cases.md | ✅ |
+| 4 | Draft execution use-cases.md | ✅ |
+| 5 | Draft monitoring use-cases.md | ✅ |
+| 6 | Draft backtesting use-cases.md | ✅ |
+| 7 | Update activity-log, commit and push | ✅ |
+
+**Next session:** all 10 Layer 2 use-cases now exist at `Status: Draft (AI)`. Domain-expert review + approval is the gate before Layer 3 (`bounded-context.md`, `aggregate.md`, `domain-event-catalog.md`) can be derived per context. Recommended next: walk one context (suggest `market-data`) end-to-end through Layers 3/4/5 as a reference vertical slice before fanning out.
+
+---
+
 ## 2026/04/28-1745
 
 **User prompt:** `continue` — resume the prior `/ddd` thread; user picked option **B** (5 contexts now, then commit/push and stop).
