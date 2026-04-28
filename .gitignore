@@ -1,0 +1,43 @@
+# Secrets
+.env
+.env*
+*.pem
+
+# Data (top-level only; src/fccnc_trader/data/ is source code)
+*.db
+*.sqlite
+
+# ML artifacts
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+docker-compose.override.yml
+
+# IB Gateway
+tws_settings/
+nul
+
